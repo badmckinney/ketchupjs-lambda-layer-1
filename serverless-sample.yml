@@ -1,0 +1,22 @@
+service: aws-nodejs 
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-west-2
+  environment:
+    QUEUE_URL: 
+    ACCESS_KEY: 
+    SECRET_KEY: 
+functions:
+  queue: 
+    request: 
+      passThrough: WHEN_NO_TEMPLATES
+      template:
+        application/x-www-form-urlencoded: '{ "body" : "$input.body" }'
+    handler: handler.queue 
+    events:
+      - http:
+          path: queue
+          method: post 
+          cors: true  true)
