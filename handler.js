@@ -13,19 +13,19 @@ module.exports.queue = async (event, context, callback) => {
   const queueURL = process.env.QUEUE_URL;
 
   const body = JSON.parse(event.body);
-  const type = body.type;
+  const key = body.key;
   const metric = body.metric;
   const value = body.value;
-  const player = body.player;
+  const user_id = body.user_id;
 
   const params = {
     MessageBody: 'Success',
     QueueUrl: queueURL,
     DelaySeconds: 0,
     MessageAttributes: {
-      type: {
+      key: {
         DataType: 'String',
-        StringValue: type
+        StringValue: key
       },
       metric: {
         DataType: 'String',
@@ -35,9 +35,9 @@ module.exports.queue = async (event, context, callback) => {
         DataType: 'Number',
         StringValue: value
       },
-      player: {
+      user_id: {
         DataType: 'Number',
-        StringValue: player
+        StringValue: user_id
       }
     },
     MessageDeduplicationId: 'ketchupDataDeduplicationId',
