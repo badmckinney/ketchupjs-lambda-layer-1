@@ -39,9 +39,7 @@ module.exports.queue = async (event, context, callback) => {
         DataType: 'Number',
         StringValue: user_id
       }
-    },
-    MessageDeduplicationId: 'ketchupDataDeduplicationId',
-    MessageGroupId: 'ketchupData'
+    }
   };
 
   sqs.sendMessage(params, function (err, data) {

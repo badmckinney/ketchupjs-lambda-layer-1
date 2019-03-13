@@ -1,4 +1,4 @@
-service: aws-nodejs 
+service: ketchup-layer-1
 provider:
   name: aws
   runtime: nodejs8.10
