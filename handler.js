@@ -1,5 +1,6 @@
 module.exports.queue = async (event, context, callback) => {
   const aws = require('aws-sdk');
+  const uuidAPIKey = require('uuid-apikey');
   const { Client } = require('pg');
   aws.config.update({
     region: 'us-west-2',
@@ -13,12 +14,20 @@ module.exports.queue = async (event, context, callback) => {
 
   const body = JSON.parse(event.body);
 
-  if (typeof body.value !== 'number') { }
+  if (isNaN(body.value)) {
+    callback(null, {
+      "statusCode": 400,
+      "body": JSON.stringify({
+        "message": "Value must be of type Number"
+      }),
+    });
+  }
 
-  const key = body.key;
+  const key = uuidAPIKey.toUUID(body.key);
   const metric = body.metric;
   const value = body.value;
   const user_name = body.user_name;
+  const most = body.most;
 
   const client = new Client();
   await client.connect();
@@ -61,9 +70,16 @@ module.exports.queue = async (event, context, callback) => {
       }
     };
 
+    if (most) {
+      params.MessageAttributes.most =
+        {
+          'DataType': 'String',
+          'StringValue': most.toString()
+        }
+    }
+
     sqs.sendMessage(params, function (err, data) {
       if (err) {
-        console.log('error', err);
         callback('error', {
           statusCode: 500,
           body: JSON.stringify({
@@ -71,11 +87,8 @@ module.exports.queue = async (event, context, callback) => {
             input: event,
           })
         });
-      } else {
-        console.log('success');
       }
     });
-
     callback(null, {
       "statusCode": 200,
       "body": JSON.stringify({
